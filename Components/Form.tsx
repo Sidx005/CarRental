@@ -43,11 +43,19 @@ const Form = ({ car }: any) => {
         }
     }, [user]);
 
+    interface Location {
+        address: string;
+    }
+    
+    interface LocationResponse {
+        storesLocations: Location[];
+    }
+    
     // Fetch store locations
     useEffect(() => {
         const fetchLocations = async () => {
             try {
-                const resp = await getStoreLocations() ;
+                const resp = await getStoreLocations() as LocationResponse ;
                 setLocations(resp.storesLocations || []);
             } catch (err) {
                 setError('Failed to load locations. Please try again.');
