@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { booking, getStoreLocations } from '@/services';
 
-const Form = ({ car }) => {
+const Form = ({ car }:any) => {
     const { user } = useUser();
     const [locations, setLocations] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
