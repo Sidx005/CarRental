@@ -2,20 +2,32 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { booking, getStoreLocations } from '@/services';
 
-const Form = ({ car }:any) => {
+// Define the FormData type
+interface FormData {
+    location: string;
+    pickUpDate: string;
+    dropOffDate: string;
+    pickUpTime: string;
+    dropOffTime: string;
+    contactNumber: string;
+    userName: string | null;  // Allow null for userName
+    carId: string;
+}
+
+const Form = ({ car }: any) => {
     const { user } = useUser();
-    const [locations, setLocations] = useState([]);
+    const [locations, setLocations] = useState<any[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<FormData>({
         location: '',
         pickUpDate: '',
         dropOffDate: '',
         pickUpTime: '',
         dropOffTime: '',
         contactNumber: '',
-        userName: '',
-        carId: ''
+        userName: null,  // Initialize as null
+        carId: '',
     });
 
     // Initialize form with car ID and user data
@@ -35,7 +47,7 @@ const Form = ({ car }:any) => {
     useEffect(() => {
         const fetchLocations = async () => {
             try {
-                const resp = await getStoreLocations();
+                const resp = await getStoreLocations() ;
                 setLocations(resp.storesLocations || []);
             } catch (err) {
                 setError('Failed to load locations. Please try again.');
@@ -69,12 +81,16 @@ const Form = ({ car }:any) => {
         return true;
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
         setError(''); 
     };
-
+    interface BookingResponse {
+        createBooking?: {
+            id: string;
+        };
+    }
     const handleSubmit = async () => {
         if (!validateForm()) return;
 
@@ -82,13 +98,13 @@ const Form = ({ car }:any) => {
         setError('');
 
         try {
-            const response = await booking(formData);
+            const response = await booking(formData) as BookingResponse;
             if (response?.createBooking?.id) {
                 console.log('Booking successful:', response.createBooking.id);
             } else {
                 throw new Error('Booking failed');
             }
-            alert('Booking successful')
+            alert('Booking successful');
             setFormData(prev => ({
                 location: '',
                 pickUpDate: '',
